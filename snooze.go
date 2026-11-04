@@ -277,7 +277,7 @@ func (m Model) renderSnoozePopup(w, h int) string {
 
 	return lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(colGreen).
+		BorderForeground(colBorder).
 		Padding(1, 2).
 		Width(w - 2).
 		Height(h).

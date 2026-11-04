@@ -31,27 +31,27 @@ import (
 // ---------------------------------------------------------------------------
 
 var (
-	colCyan     = lipgloss.Color("#00D7D7")
-	colYellow   = lipgloss.Color("#FFD700")
-	colGreen    = lipgloss.Color("#00D75F")
-	colDarkGray = lipgloss.Color("#303030")
-	colWhite    = lipgloss.Color("#FFFFFF")
-	colRed      = lipgloss.Color("#FF4444")
-	colDimGray  = lipgloss.Color("#888888")
+	colCyan     = mochaSky
+	colYellow   = mochaYellow
+	colGreen    = mochaGreen
+	colDarkGray = mochaSurface1
+	colWhite    = mochaText
+	colRed      = mochaRed
+	colDimGray  = mochaOverlay1
+	colBorder   = mochaBlue
 )
 
 // Panel border styles.
 var (
 	normalBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(colGreen)
+			BorderForeground(colBorder)
 
 	bellBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(colRed).
 			Foreground(colRed).
-			Bold(true).
-			Background(colWhite)
+			Bold(true)
 )
 
 // ---------------------------------------------------------------------------
@@ -3485,7 +3485,7 @@ func (m Model) renderRightPanel(w, h int) string {
 			chans := m.allChannels()
 			if m.channelSelectedIndex < len(chans) {
 				entry := chans[m.channelSelectedIndex]
-				title = lipgloss.NewStyle().Foreground(lipgloss.Color("#5F87FF")).Bold(true).Render("#") +
+				title = lipgloss.NewStyle().Foreground(mochaBlue).Bold(true).Render("#") +
 					" " + entry.teamName + " » " + entry.channelName +
 					lipgloss.NewStyle().Foreground(colDimGray).Render(fmt.Sprintf("  (%s:scroll, %s:select, %s:help)",
 						slashKeys(nk.PageUp, nk.PageDown),
@@ -3514,7 +3514,7 @@ func (m Model) renderRightPanel(w, h int) string {
 		}
 		msgContent := m.renderMessages(w, h-1)
 		return fixedPanel(
-			normalBorder.BorderStyle(lipgloss.RoundedBorder()).BorderForeground(colGreen),
+			normalBorder.BorderStyle(lipgloss.RoundedBorder()).BorderForeground(colBorder),
 			lipgloss.JoinVertical(lipgloss.Left, dimLine(title, w), msgContent),
 			w, h,
 		)
@@ -3559,12 +3559,12 @@ func (m Model) renderRightPanel(w, h int) string {
 
 			if i == m.app.MentionSelectedIndex {
 				line = lipgloss.NewStyle().
-					Background(lipgloss.Color("#5F87FF")).
-					Foreground(lipgloss.Color("#FFFFFF")).
+					Background(mochaBlue).
+					Foreground(mochaCrust).
 					Bold(true).
 					Render(" >" + line)
 			} else {
-				line = lipgloss.NewStyle().Foreground(lipgloss.Color("#E2E2E2")).Render("  " + line)
+				line = lipgloss.NewStyle().Foreground(mochaText).Render("  " + line)
 			}
 			items = append(items, fitLine(line, w))
 		}
@@ -3652,9 +3652,9 @@ func (m Model) renderRightPanel(w, h int) string {
 				sender = "Me"
 			}
 		}
-		bar := lipgloss.NewStyle().Foreground(lipgloss.Color("#4A90D9")).Bold(true).Render("▎")
-		name := lipgloss.NewStyle().Foreground(lipgloss.Color("#7EC8E3")).Bold(true).Render(sender)
-		text := lipgloss.NewStyle().Foreground(lipgloss.Color("#6C7A89")).Render(": " + preview)
+		bar := lipgloss.NewStyle().Foreground(mochaBlue).Bold(true).Render("▎")
+		name := lipgloss.NewStyle().Foreground(mochaSapphire).Bold(true).Render(sender)
+		text := lipgloss.NewStyle().Foreground(mochaOverlay2).Render(": " + preview)
 		quoteLine := fitLine(bar+" "+name+text, w)
 		inputParts = append(inputParts, quoteLine)
 		// Separator between quote and textarea.
@@ -3665,7 +3665,7 @@ func (m Model) renderRightPanel(w, h int) string {
 	inputParts = append(inputParts, m.textarea.View())
 
 	inputBox := fixedPanel(
-		lipgloss.NewStyle().BorderStyle(lipgloss.RoundedBorder()).BorderForeground(colGreen),
+		lipgloss.NewStyle().BorderStyle(lipgloss.RoundedBorder()).BorderForeground(colBorder),
 		lipgloss.JoinVertical(lipgloss.Left, inputParts...),
 		w, inputH-1,
 	)
@@ -4072,7 +4072,7 @@ func (m Model) renderChatList(w, h int) string {
 					if isHidden {
 						icon = lipgloss.NewStyle().Foreground(colDimGray).Render("#")
 					} else {
-						icon = lipgloss.NewStyle().Foreground(lipgloss.Color("#5F87FF")).Render("#")
+						icon = lipgloss.NewStyle().Foreground(mochaBlue).Render("#")
 					}
 
 					labelStr := prefix + icon + " " + entry.teamName + " » " + entry.channelName
@@ -4164,17 +4164,17 @@ func (m Model) renderMessages(w, h int) string {
 			if msg.IsReply {
 				if alignRight {
 					// Right-aligned reply.
-					color := lipgloss.Color("#5F87AF") // others reply color (blueish)
+					color := mochaLavender // others reply color (blueish)
 					if m.isOwn(msg) {
-						color = lipgloss.Color("#5FAF87") // own reply color (greenish)
+						color = mochaTeal // own reply color (greenish)
 					}
 					h := lipgloss.NewStyle().Foreground(color).Render(dateStr + " " + senderName + " ↳")
 					header = padLeft(h, w)
 				} else {
 					// Left-aligned reply.
-					color := lipgloss.Color("#5F87AF") // others reply color (blueish)
+					color := mochaLavender // others reply color (blueish)
 					if m.isOwn(msg) {
-						color = lipgloss.Color("#5FAF87") // own reply color (greenish)
+						color = mochaTeal // own reply color (greenish)
 					}
 					replyPrefix := lipgloss.NewStyle().Foreground(colDimGray).Render("  ↳ ")
 					header = replyPrefix + lipgloss.NewStyle().Foreground(color).Render(senderName+" "+dateStr)
@@ -4494,7 +4494,7 @@ func (m Model) getWrappedMessageLines(msg *Message, maxW int, searchQuery string
 		if searchActive && searchQuery != "" {
 			subjText = highlightSearchQuery(subjText, searchQuery)
 		}
-		subjStyled := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FFFFFF")).Render(subjText)
+		subjStyled := lipgloss.NewStyle().Bold(true).Foreground(mochaText).Render(subjText)
 		if body != "" {
 			body = subjStyled + "\n" + body
 		} else {
@@ -5718,7 +5718,7 @@ func (m Model) renderSearchPopup(w, h int) string {
 				if item.IsMatch {
 					subjText = highlightSearchQuery(subjText, m.app.SearchQuery)
 				}
-				subjStyled := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FFFFFF")).Render(subjText)
+				subjStyled := lipgloss.NewStyle().Bold(true).Foreground(mochaText).Render(subjText)
 				if body != "" {
 					body = subjStyled + "\n" + body
 				} else {
@@ -6555,7 +6555,7 @@ func (m Model) renderMessagePopup(w, h int) string {
 		if previewDownloading {
 			previewText = "\n⏳ Loading preview..."
 		} else {
-			borderColor = colGreen
+			borderColor = colBorder
 		}
 
 		rightPanelStr := lipgloss.NewStyle().
@@ -7263,7 +7263,7 @@ func (m Model) renderUserProfilePopup(w, h int) string {
 
 	return lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(colGreen).
+		BorderForeground(colBorder).
 		Padding(1, 2).
 		Width(w).Height(h).
 		Render(strings.Join(lines, "\n"))
@@ -7851,7 +7851,7 @@ func (m Model) renderFilePickerPopup(w, h int) string {
 
 	return lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(colGreen).
+		BorderForeground(colBorder).
 		Padding(1, 2).
 		Width(w).Height(h).
 		Render(strings.Join(lines, "\n"))

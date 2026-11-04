@@ -192,7 +192,7 @@ func (m Model) renderChatActionPopup(w, h int) string {
 	content := strings.Join(lines, "\n")
 	return lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(colGreen).
+		BorderForeground(colBorder).
 		Padding(1, 2).
 		Width(w - 2).
 		MaxHeight(h).

@@ -263,7 +263,7 @@ func (m Model) renderConversationArtifactPopup(w, h int) string {
 
 	return lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(colGreen).
+		BorderForeground(colBorder).
 		Padding(1, 2).
 		Width(w).Height(h).
 		Render(fitBlock(strings.Join(lines, "\n"), innerW, innerH))

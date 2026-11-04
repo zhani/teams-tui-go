@@ -161,17 +161,17 @@ func DefaultStyles() Styles {
 // with a given Lip Gloss renderer.
 func DefaultStylesWithRenderer(r *lipgloss.Renderer) Styles {
 	return Styles{
-		DisabledCursor:   r.NewStyle().Foreground(lipgloss.Color("247")),
-		Cursor:           r.NewStyle().Foreground(lipgloss.Color("212")),
-		Symlink:          r.NewStyle().Foreground(lipgloss.Color("36")),
-		Directory:        r.NewStyle().Foreground(lipgloss.Color("99")),
+		DisabledCursor:   r.NewStyle().Foreground(lipgloss.Color("#9399b2")),
+		Cursor:           r.NewStyle().Foreground(lipgloss.Color("#f5c2e7")),
+		Symlink:          r.NewStyle().Foreground(lipgloss.Color("#94e2d5")),
+		Directory:        r.NewStyle().Foreground(lipgloss.Color("#cba6f7")),
 		File:             r.NewStyle(),
-		DisabledFile:     r.NewStyle().Foreground(lipgloss.Color("243")),
-		DisabledSelected: r.NewStyle().Foreground(lipgloss.Color("247")),
-		Permission:       r.NewStyle().Foreground(lipgloss.Color("244")),
-		Selected:         r.NewStyle().Foreground(lipgloss.Color("212")).Bold(true),
-		FileSize:         r.NewStyle().Foreground(lipgloss.Color("240")).Width(fileSizeWidth).Align(lipgloss.Right),
-		EmptyDirectory:   r.NewStyle().Foreground(lipgloss.Color("240")).PaddingLeft(paddingLeft).SetString("Bummer. No Files Found."),
+		DisabledFile:     r.NewStyle().Foreground(lipgloss.Color("#6c7086")),
+		DisabledSelected: r.NewStyle().Foreground(lipgloss.Color("#9399b2")),
+		Permission:       r.NewStyle().Foreground(lipgloss.Color("#7f849c")),
+		Selected:         r.NewStyle().Foreground(lipgloss.Color("#f5c2e7")).Bold(true),
+		FileSize:         r.NewStyle().Foreground(lipgloss.Color("#585b70")).Width(fileSizeWidth).Align(lipgloss.Right),
+		EmptyDirectory:   r.NewStyle().Foreground(lipgloss.Color("#585b70")).PaddingLeft(paddingLeft).SetString("Bummer. No Files Found."),
 	}
 }
 

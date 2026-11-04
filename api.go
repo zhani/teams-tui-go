@@ -2195,8 +2195,8 @@ func HTMLToText(htmlContent string, attachments []MessageAttachment, mentions []
 	var listStack []listInfo
 
 	// ---- lipgloss styles ----
-	preCodeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#98C379"))
-	bulletStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#888888"))
+	preCodeStyle := lipgloss.NewStyle().Foreground(mochaGreen)
+	bulletStyle := lipgloss.NewStyle().Foreground(mochaOverlay1)
 
 	// applyInlineStyles applies the currently active inline text styles.
 	applyInlineStyles := func(text string) string {
@@ -2327,7 +2327,7 @@ func HTMLToText(htmlContent string, attachments []MessageAttachment, mentions []
 						imgName += ".png"
 					}
 				}
-				orangeText := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8700")).Render(imgName)
+				orangeText := lipgloss.NewStyle().Foreground(mochaPeach).Render(imgName)
 				content := "🖼️ " + orangeText
 				if inLink {
 					content = fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", currentLinkURL, content)
@@ -2375,7 +2375,7 @@ func HTMLToText(htmlContent string, attachments []MessageAttachment, mentions []
 							continue
 						}
 					}
-					orangeText := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8700")).Render("Attachment")
+					orangeText := lipgloss.NewStyle().Foreground(mochaPeach).Render("Attachment")
 					sb.WriteString("📎 " + orangeText)
 					lastChar = 't'
 				}
@@ -2473,7 +2473,7 @@ func HTMLToText(htmlContent string, attachments []MessageAttachment, mentions []
 				if inLink {
 					lt := strings.TrimSpace(linkText.String())
 					if lt != "" && lt != currentLinkURL && !strings.Contains(currentLinkURL, lt) {
-						diag := lipgloss.NewStyle().Foreground(lipgloss.Color("#888888")).Render(" (" + currentLinkURL + ")")
+						diag := lipgloss.NewStyle().Foreground(mochaOverlay1).Render(" (" + currentLinkURL + ")")
 						sb.WriteString(diag)
 					}
 					inLink = false
@@ -2547,7 +2547,7 @@ func HTMLToText(htmlContent string, attachments []MessageAttachment, mentions []
 }
 
 func formatInlineFileAttachment(name string) string {
-	orangeText := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8700")).Render(name)
+	orangeText := lipgloss.NewStyle().Foreground(mochaPeach).Render(name)
 	return "📎 " + orangeText
 }
 
@@ -2727,11 +2727,11 @@ func formatQuoteBlock(sender, timeStr, chatLabel, preview string) string {
 		preview = string(runes[:maxPreview]) + "…"
 	}
 
-	quoteStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#6C7A89"))
-	barStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#4A90D9")).Bold(true)
-	nameStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#7EC8E3")).Bold(true)
-	timeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#4A5568"))
-	chatStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#A0B4C8")).Bold(true)
+	quoteStyle := lipgloss.NewStyle().Foreground(mochaOverlay2)
+	barStyle := lipgloss.NewStyle().Foreground(mochaBlue).Bold(true)
+	nameStyle := lipgloss.NewStyle().Foreground(mochaSapphire).Bold(true)
+	timeStyle := lipgloss.NewStyle().Foreground(mochaOverlay0)
+	chatStyle := lipgloss.NewStyle().Foreground(mochaSubtext0).Bold(true)
 
 	bar := barStyle.Render("▎")
 
