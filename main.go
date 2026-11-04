@@ -806,6 +806,7 @@ func main() {
 
 	// Set default HTTP client timeout to prevent background refreshes from hanging indefinitely.
 	http.DefaultClient.Timeout = 15 * time.Second
+	installBackendTransport() // teams-for-linux fork
 
 	// 1. Banner.
 	fmt.Printf("TeamsTUI %s\n", version)

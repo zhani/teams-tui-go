@@ -1,5 +1,6 @@
 # Binary
 teams-tui-go
+teams-tui
 
 # Environment variables (may contain secrets)
 .env

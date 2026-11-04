@@ -216,6 +216,9 @@ func RefreshAccessToken(clientID, refreshToken, scopes string) (*TokenResponse, 
 // GetValidTokenSilent returns a valid access token from the cache, refreshing if necessary.
 // Returns an error if the token is expired and cannot be refreshed.
 func GetValidTokenSilent(clientID string) (string, error) {
+	if teamsForLinuxBackend() { // teams-for-linux fork: the app holds the token
+		return backendToken, nil
+	}
 	token, err := loadToken()
 	if err != nil {
 		return "", fmt.Errorf("could not load token: %w", err)
@@ -243,6 +246,9 @@ func GetValidTokenSilent(clientID string) (string, error) {
 
 // GetAccessToken returns a valid access token, running the full device code flow if needed.
 func GetAccessToken(clientID string) (string, error) {
+	if teamsForLinuxBackend() { // teams-for-linux fork: the app holds the token
+		return backendToken, nil
+	}
 	// Try silent first.
 	if token, err := GetValidTokenSilent(clientID); err == nil {
 		return token, nil

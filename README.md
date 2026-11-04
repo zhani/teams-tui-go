@@ -4,6 +4,25 @@ A keyboard-driven terminal UI client for Microsoft Teams, written in Go.
 
 Authenticates via **OAuth2 Device Code Flow** (no browser redirect needed), fetches your chats and messages from the **Microsoft Graph API**, and displays them in a fast, minimal TUI.
 
+## teams-for-linux backend (this fork)
+
+This fork can use a running [teams-for-linux](https://github.com/zhani/teams-for-linux) app
+(branch `feat/terminal-api`) as its backend instead of the device-code sign-in. Every
+`graph.microsoft.com` request goes over the app's local Unix socket, and the app performs it with
+the token of its signed-in Teams session. Chat reads that the token cannot do are answered from
+the Teams chat service in Graph shape. There is no separate sign-in, and no device-code flow for
+the tenant's security tooling to flag.
+
+- Enable `graphApi.enabled` and `terminalApi.enabled` in the app's `config.json`. It can run
+  headless (`npm run start:headless`).
+- The backend is used whenever the socket exists: `$TEAMS_CLI_SOCKET`, else
+  `$XDG_RUNTIME_DIR/teams-for-linux-terminal.sock`. Set `TEAMS_TUI_BACKEND=direct` to use the
+  original device-code flow.
+- Not available through this backend, because the Teams token lacks the scopes: presence, user
+  profile details, and creating new chats.
+
+See `backend.go`.
+
 ---
 
 ## Features
