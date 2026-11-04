@@ -4211,7 +4211,7 @@ func (m Model) renderMessages(w, h int) string {
 			replyIndent = "    " // 4 spaces aligning under "↳ "
 		}
 
-		msgLines := m.getWrappedMessageLines(&msgs[i], maxW-len(replyIndent), m.app.SearchQuery, m.app.SearchActive)
+		msgLines := m.getWrappedMessageLines(&msgs[i], maxW-len(replyIndent), m.app.SearchQuery, m.app.SearchActive, alignRight)
 		padding := 0
 		if alignRight {
 			maxMsgW := 0
@@ -4475,12 +4475,14 @@ func (m Model) messagePlainText(msg *Message) string {
 	return HTMLToText(*msg.Body.Content, msg.Attachments, msg.Mentions, m.conversationNameMap())
 }
 
-func (m Model) getWrappedMessageLines(msg *Message, maxW int, searchQuery string, searchActive bool) []string {
+// alignRight is true for messages drawn on the right (own chat messages,
+// channel replies); their reactions go bottom right, others' bottom left.
+func (m Model) getWrappedMessageLines(msg *Message, maxW int, searchQuery string, searchActive bool, alignRight bool) []string {
 	queryKey := ""
 	if searchActive {
 		queryKey = searchQuery
 	}
-	if msg.WrappedWidthCached == maxW && msg.WrappedQueryCached == queryKey && len(msg.WrappedLinesCached) > 0 {
+	if msg.WrappedWidthCached == maxW && msg.WrappedQueryCached == queryKey && msg.WrappedRightCached == alignRight && len(msg.WrappedLinesCached) > 0 {
 		return msg.WrappedLinesCached
 	}
 
@@ -4502,18 +4504,28 @@ func (m Model) getWrappedMessageLines(msg *Message, maxW int, searchQuery string
 		}
 	}
 
-	reactionsStr := renderReactions(msg.Reactions)
-	if reactionsStr != "" {
-		if body != "" {
-			body += "\n" + reactionsStr
-		} else {
-			body = reactionsStr
+	var lines []string
+	if body != "" {
+		lines = wordWrap(body, maxW)
+	}
+	if reactionsStr := renderReactions(msg.Reactions); reactionsStr != "" {
+		// As in the Teams client, reactions follow the message's side.
+		blockW := 0
+		if alignRight {
+			for _, l := range lines {
+				blockW = max(blockW, lipgloss.Width(l))
+			}
+		}
+		for _, l := range wordWrap(reactionsStr, maxW) {
+			lines = append(lines, padLeft(l, blockW))
 		}
 	}
-
-	lines := wordWrap(body, maxW)
+	if len(lines) == 0 {
+		lines = wordWrap("", maxW)
+	}
 	msg.WrappedWidthCached = maxW
 	msg.WrappedQueryCached = queryKey
+	msg.WrappedRightCached = alignRight
 	msg.WrappedLinesCached = lines
 	return lines
 }

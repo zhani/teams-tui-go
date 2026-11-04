@@ -84,6 +84,7 @@ type Message struct {
 	NormalizedSubjectCached *string             `json:"-"`
 	WrappedWidthCached      int                 `json:"-"`
 	WrappedQueryCached      string              `json:"-"`
+	WrappedRightCached      bool                `json:"-"`
 	WrappedLinesCached      []string            `json:"-"`
 	// IsReply is set in-process (not from JSON) for Teams channel thread replies.
 	IsReply   bool   `json:"-"`
