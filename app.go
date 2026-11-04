@@ -122,6 +122,7 @@ type App struct {
 	ReplyToMessage              *Message            // set when user presses 'a' to reply-quote a message
 	UrlSelectionMode            bool
 	UrlSelectionOpenMode        bool // true if opening, false if yanking/copying
+	UrlSelectionCodeMode        bool // UrlsInMessage holds code blocks, not URLs
 	UrlSelectedIndex            int
 	UrlsInMessage               []string
 	MessageLineOffsets          []int
@@ -330,7 +331,7 @@ func (a *App) ActivateConversation(id string) {
 	a.ReactionMode, a.DeleteConfirmMode = false, false
 	a.AttachmentCursorMode = false
 	a.AttachmentSelectedIndex = 0
-	a.UrlSelectionMode = false
+	a.UrlSelectionMode, a.UrlSelectionCodeMode = false, false
 	a.UrlsInMessage = nil
 	a.SearchPopupMode, a.SearchLoadingMessages = false, false
 	a.SearchPopupResults = nil

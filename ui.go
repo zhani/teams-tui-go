@@ -2706,6 +2706,28 @@ func (m Model) handleMessageSelectionModeKey(msg tea.KeyMsg) (Model, tea.Cmd) {
 			return m, m.textarea.Focus()
 		}
 		return m, nil
+	case pressed(msg, k.YankCode):
+		if m.app.MessageSelectedIndex < len(m.app.Messages) {
+			msgObj := m.app.Messages[m.app.MessageSelectedIndex]
+			var blocks []string
+			if msgObj.Body != nil && msgObj.Body.Content != nil {
+				blocks = ExtractCodeBlocks(*msgObj.Body.Content)
+			}
+			switch {
+			case len(blocks) == 0:
+				m.app.SetStatus("No code blocks found in message", 3*time.Second)
+			case len(blocks) == 1:
+				m.copyCodeBlock(blocks[0])
+				m.app.MessageSelectionMode = false
+			default:
+				m.app.UrlSelectionMode = true
+				m.app.UrlSelectionOpenMode = false
+				m.app.UrlSelectionCodeMode = true
+				m.app.UrlSelectedIndex = 0
+				m.app.UrlsInMessage = blocks
+			}
+		}
+		return m, nil
 	case pressed(msg, k.YankURL):
 		if m.app.MessageSelectedIndex < len(m.app.Messages) {
 			msgObj := m.app.Messages[m.app.MessageSelectedIndex]
@@ -2721,6 +2743,7 @@ func (m Model) handleMessageSelectionModeKey(msg tea.KeyMsg) (Model, tea.Cmd) {
 				} else {
 					m.app.UrlSelectionMode = true
 					m.app.UrlSelectionOpenMode = false
+					m.app.UrlSelectionCodeMode = false
 					m.app.UrlSelectedIndex = 0
 					m.app.UrlsInMessage = urls
 				}
@@ -2957,6 +2980,9 @@ func (m Model) updateUrlSelection(msg tea.KeyMsg) (Model, tea.Cmd) {
 
 func (m Model) handleUrlSelectionModeKey(msg tea.KeyMsg) (Model, tea.Cmd) {
 	k := m.app.Keys.URLList
+	if m.app.UrlSelectionCodeMode {
+		return m.handleCodeSelectionKey(msg)
+	}
 	switch {
 	case pressed(msg, k.Close):
 		m.app.UrlSelectionMode = false
@@ -3004,6 +3030,36 @@ func (m Model) handleUrlSelectionModeKey(msg tea.KeyMsg) (Model, tea.Cmd) {
 		}
 	}
 	return m, nil
+}
+
+// handleCodeSelectionKey drives the URL picker when it lists code blocks.
+func (m Model) handleCodeSelectionKey(msg tea.KeyMsg) (Model, tea.Cmd) {
+	k := m.app.Keys.URLList
+	switch {
+	case pressed(msg, k.Close):
+		m.app.UrlSelectionMode, m.app.UrlSelectionCodeMode = false, false
+	case pressed(msg, k.Next):
+		if m.app.UrlSelectedIndex < len(m.app.UrlsInMessage)-1 {
+			m.app.UrlSelectedIndex++
+		}
+	case pressed(msg, k.Prev):
+		if m.app.UrlSelectedIndex > 0 {
+			m.app.UrlSelectedIndex--
+		}
+	case pressed(msg, k.Confirm), pressed(msg, k.Yank):
+		m.copyCodeBlock(m.app.UrlsInMessage[m.app.UrlSelectedIndex])
+		m.app.UrlSelectionMode, m.app.UrlSelectionCodeMode = false, false
+		m.app.MessageSelectionMode = false
+	}
+	return m, nil
+}
+
+func (m Model) copyCodeBlock(code string) {
+	if err := clipboard.WriteAll(code); err == nil {
+		m.app.SetStatus("Code block copied to clipboard", 3*time.Second)
+	} else {
+		m.app.SetStatus("Clipboard error: "+err.Error(), 5*time.Second)
+	}
 }
 
 // Update is the Bubble Tea update function — processes messages and returns
@@ -3439,10 +3495,11 @@ func (m Model) renderRightPanel(w, h int) string {
 			}
 		} else if m.app.MessageSelectionMode {
 			mk := m.app.Keys.Message
-			title = fmt.Sprintf("MESSAGE MODE (%s:nav, %s:react, %s:yank, %s:url, %s:open, %s:delete, %s:edit, %s:answer, %s:view, %s:editor, %s:presence, %s:profile, %s:exit)",
+			title = fmt.Sprintf("MESSAGE MODE (%s:nav, %s:react, %s:yank, %s:code, %s:url, %s:open, %s:delete, %s:edit, %s:answer, %s:view, %s:editor, %s:presence, %s:profile, %s:exit)",
 				slashKeys(mk.Next, mk.Prev),
 				FormatKeys(mk.React, "/"),
 				FormatKeys(mk.Yank, "/"),
+				FormatKeys(mk.YankCode, "/"),
 				FormatKeys(mk.YankURL, "/"),
 				FormatKeys(mk.OpenURL, "/"),
 				FormatKeys(mk.Delete, "/"),
@@ -4893,7 +4950,9 @@ func (m Model) renderUrlSelection(w, h int) string {
 	}
 
 	var titleText string
-	if m.app.UrlSelectionOpenMode {
+	if m.app.UrlSelectionCodeMode {
+		titleText = "Select code block to yank (Enter/y to copy, Esc/q to cancel):"
+	} else if m.app.UrlSelectionOpenMode {
 		titleText = "Select URL to open (Enter to open, Esc/q to cancel):"
 	} else {
 		titleText = "Select URL to yank (Enter/y to copy, Esc/q to cancel):"
@@ -4912,7 +4971,9 @@ func (m Model) renderUrlSelection(w, h int) string {
 		}
 
 		displayURL := u
-		if len(displayURL) > w-10 {
+		if m.app.UrlSelectionCodeMode {
+			displayURL = ansi.Truncate(codeBlockLabel(u), w-10, "...")
+		} else if len(displayURL) > w-10 {
 			displayURL = displayURL[:w-13] + "..."
 		}
 		list.WriteString(style.Render(prefix+displayURL) + "\n")
@@ -6655,6 +6716,7 @@ func (m Model) getHelpContentLines() []string {
 			{hk(msg.Next) + " / " + hk(msg.Prev), "Navigate messages"},
 			{hk(msg.View), "View message popup"},
 			{hk(msg.Yank), "Yank message to clipboard"},
+			{hk(msg.YankCode), "Yank code block(s) only"},
 			{hk(msg.YankURL), "Extract URLs"},
 			{hk(msg.OpenURL), "Open URLs"},
 			{hk(msg.React), "React to message"},

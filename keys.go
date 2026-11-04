@@ -54,7 +54,7 @@ type MentionKeys struct {
 type MessageKeys struct {
 	Close, Next, Prev, React, Yank, Delete, Editor key.Binding
 	Edit, Reply, YankURL, OpenURL, View            key.Binding
-	Presence, Profile                              key.Binding
+	Presence, Profile, YankCode                    key.Binding
 }
 
 type MessageViewKeys struct {
@@ -191,6 +191,7 @@ func DefaultKeyMap() KeyMap {
 			View:     bind("v"),
 			Presence: bind("p"),
 			Profile:  bind("i"),
+			YankCode: bind("c"),
 		},
 		MessageView: MessageViewKeys{
 			Close:       bind("esc", "q", "v"),
@@ -414,6 +415,7 @@ func (k *KeyMap) slots(mode string) []keySlot {
 			{"view", "", &c.View},
 			{"presence", "", &c.Presence},
 			{"profile", "", &c.Profile},
+			{"yank_code", "", &c.YankCode},
 		}
 	case "message_view":
 		c := &k.MessageView

@@ -499,6 +499,7 @@ Only these keys are commands. Everything else is typed into the message.
 | `prev` | `k`, `up` | Older message |
 | `react` | `r` | Open reactions |
 | `yank` | `y` | Copy the message |
+| `yank_code` | `c` | Copy only the code block(s) |
 | `delete` | `d` | Delete your message |
 | `editor` | `ctrl+g` | Open in the external editor |
 | `edit` | `e` | Edit your message |
